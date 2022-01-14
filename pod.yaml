@@ -19,19 +19,3 @@ spec:
       limits:
         memory: "400Mi"
         cpu: "400m"
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: lbsvc
-  namespace: devns
-spec:
-  type: LoadBalancer
-  selector:
-    app: web
-  ports:
-  - port: 80
-    targetPort: 80
-    name: javaport

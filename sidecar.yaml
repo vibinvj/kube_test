@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webdep1
+  namespace: devns
+  labels:
+    app: web
+spec:
+  selector:
+    matchLabels:
+      app: web
+  replicas: 1
+  template:
+    metadata:
+      name: webtmp
+      labels:
+        app: web
+    spec:
+      volumes:
+      - emptyDir: {}
+        name: sidevol
+      containers:
+        - image: httpd:latest
+          imagePullPolicy: Always
+          name: webcon
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "100m"
+            limits:
+              memory: "200Mi"
+              cpu: "200m"
+          volumeMounts:
+          - name: sidevol
+            mountPath: /usr/local/apache2/htdocs
+        - image: centos:7
+          imagePullPolicy: Always
+          name: sidefile
+          volumeMounts:
+          - name: sidevol
+            mountPath: /data/
+          command: ["/bin/bash"]
+          args: ["-c", "while true; do echo $(hostname) $(date +%F) >>/data/index.html ; sleep 10 ; done"]
