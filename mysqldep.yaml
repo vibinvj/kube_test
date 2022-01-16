@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dbdep
+  namespace: devns
+  labels:
+    app: db
+    env: dev
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: db
+      env: dev
+  template:
+    metadata:
+      labels:
+        app: db
+        env: dev
+    spec:
+      volumes:
+      - persistentVolumeClaim:
+          claimName: pvctest
+        name: dbvol
+      containers:
+      - image: mysql:latest
+        imagePullPolicy: IfNotPresent
+        name: dbcon
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: dbvol
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "admin123"
